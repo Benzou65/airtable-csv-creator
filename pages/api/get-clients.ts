@@ -2,15 +2,11 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import getClients from "../../backend/clients/client.controller";
 
-type Data = {
-  name: string;
-};
-
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: NextApiResponse<any>
 ) {
   const clients = await getClients();
-  console.log(clients);
-  res.status(200).json({ name: "John Doe" });
+
+  res.status(200).json(clients);
 }

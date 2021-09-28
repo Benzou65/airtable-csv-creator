@@ -39,39 +39,16 @@ export default async function getClients(): Promise<any[]> {
     } else return { lat: null, lng: null };
   }
 
-  return clientInfos.map(async (clientInfo) => {
-    // Fetch coordinates from google geocoding api for each client
-    const coordinates = await getCoordinates(clientInfo);
+  const asyncRes = await Promise.all(
+    clientInfos.map(async (clientInfo) => {
+      // Fetch coordinates from google geocoding api for each client
+      const coordinates = await getCoordinates(clientInfo);
 
-    const clientWithCoordinates = { ...clientInfo, coordinates };
+      const clientWithCoordinates = { ...clientInfo, ...coordinates };
 
-    return clientWithCoordinates;
-  });
-}
-
-table
-  .select({
-    // Selecting the first 3 records in Grid view:
-    maxRecords: 3,
-    view: "Grid view",
-  })
-  .eachPage(
-    function page(records, fetchNextPage) {
-      // This function (`page`) will get called for each page of records.
-
-      records.forEach(function (record) {
-        console.log("Retrieved", record.get("Name"));
-      });
-
-      // To fetch the next page of records, call `fetchNextPage`.
-      // If there are more records, `page` will get called again.
-      // If there are no more records, `done` will get called.
-      fetchNextPage();
-    },
-    function done(err) {
-      if (err) {
-        console.error(err);
-        return;
-      }
-    }
+      return clientWithCoordinates;
+    })
   );
+
+  return asyncRes;
+}
